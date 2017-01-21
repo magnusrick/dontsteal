@@ -1,5 +1,5 @@
-import tkinter as tk
 import math
+import tkinter as tk
 from tkinter import filedialog
 from datetime import datetime, timedelta
 from osrparse.replay import parse_replay_file
@@ -7,9 +7,12 @@ from osrparse.enums import GameMode, Mod
 
 
 def open_replay():
+    options = {"defaultextension": ".osr",
+               "filetypes": [("osu! replay file", ".osr")],
+               "title": "Open the replay files to analyze"}
     root = tk.Tk()
     root.withdraw()
-    file_path = filedialog.askopenfilename()
+    file_path = filedialog.askopenfilename(**options)
     return parse_replay_file(file_path)
 
 
