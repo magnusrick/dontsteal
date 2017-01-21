@@ -6,7 +6,6 @@ from osrparse.replay import parse_replay_file
 from osrparse.enums import GameMode, Mod
 
 
-# parse replay from file-path chosen by user
 def open_replay():
     root = tk.Tk()
     root.withdraw()
@@ -17,16 +16,13 @@ def open_replay():
 def analyze(replay):
     if replay.game_mode is GameMode.Standard and replay.game_version >= 20140226:
         print("Analyzing replay data...\n")
-        # some common replay data:
         # convert windows ticks in datetime
         replay_date = datetime(1, 1, 1) + timedelta(microseconds=replay.timestamp / 10)
         print("Played by " + replay.player_name + " on " + replay_date.strftime("%Y-%m-%d %H:%M:%S"))
-        # check if the play is NoMod, otherwise print mods
         if replay.mod_combination is Mod.NoMod:
             pass
         else:
             print("Mods:")
-            # for each mod used, print 'em all
             for mods_used in replay.mod_combination:
                 print(str(mods_used).split("Mod.")[1])
         score = ["\nTotal Score: %s" % replay.score, "300s: %s" % replay.number_300s,
@@ -82,10 +78,10 @@ for x in range(0, length-1):
 same_key_percentage = (100*same_keys_pressed) / (same_keys_pressed+not_same_keys_pressed)
 different_key_percentage = 100 - same_key_percentage
 
-print("Cases where the same keys were pressed: %s%%\n" % same_key_percentage +
-      "Cases where the pressed keys were different: %s%%" % different_key_percentage)
+print("\nCases where the same keys were pressed: %s%%\n" % same_key_percentage +
+      "Cases where the pressed keys were different: %s%%\n" % different_key_percentage)
 print("Lowest values:")
 for values in sorted(closeness)[1:11]:
     print(values)
-print("Average of similarity:")
+print("\nAverage of similarity:")
 print(sum(closeness)/len(closeness))
