@@ -7,6 +7,8 @@
 .idea/vcs.xml
 .idea/workspace.xml
 .idea/dontsteal.iml
+analysis.txt
+__pycache__/
 
 # Sensitive or high-churn files:
 .idea/dataSources/
