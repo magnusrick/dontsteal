@@ -21,7 +21,7 @@ for top_replay in top_50_replays:
     print_chan("\nCases where the same keys were pressed: %s%%\n" % comparison[1] +
                "Cases where the pressed keys were different: %s%%\n" % comparison[2])
     if comparison[1] >= 90:
-        print("Suspicious key-press percentage: %s with %s's replay" % (comparison[1], top_replay[2]))
+        print("Suspicious key-press percentage: %s%% with %s's replay" % (comparison[1], top_replay[2]))
     print_chan("Lowest values:")
     suspicious = True
     for values in sorted(comparison[0])[1:11]:

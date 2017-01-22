@@ -18,7 +18,6 @@ def open_replay():
 
 def analyze(replay):
     if replay.game_mode is GameMode.Standard and replay.game_version >= 20140226:
-        print("Analyzing replay data...\n")
         # convert windows ticks in datetime
         replay_date = datetime(1, 1, 1) + timedelta(microseconds=replay.timestamp / 10)
         print("Played by " + replay.player_name + " on " + replay_date.strftime("%Y-%m-%d %H:%M:%S"))
@@ -37,6 +36,7 @@ def analyze(replay):
             print("Perfect Combo!\n")
         else:
             pass
+        print("Analyzing replay data...\n")
     else:
         print("Can't analyze this replay...please check if it's for osu!standard and it's not too old")
     return
