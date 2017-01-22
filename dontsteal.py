@@ -52,7 +52,8 @@ def get_events_per_second(replay):
     for event in replay.play_data:
         time += event.time_since_previous_action
         if 1000*len(events) <= time:
-            events.append([event.x, event.y, event.keys_pressed])
+            new_y = event.y if Mod.HardRock not in replay.mod_combination else 384-event.y
+            events.append([event.x, new_y, event.keys_pressed])
     return events
 
 analyze(fr)
