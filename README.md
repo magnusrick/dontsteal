@@ -5,7 +5,7 @@ Python3 script to compare 2 replays and see how much they're similar to each oth
 run `python3 -m pip install -r requirements.txt`
 
 # setup
-paste an osu!api key in apikey.txt
+paste an osu!api key in `apikey.txt`
 
 # usage
 - you can run `python3 dontsteal.py` to compare two replays you have
