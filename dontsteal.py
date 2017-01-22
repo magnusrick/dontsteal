@@ -41,9 +41,6 @@ def analyze(replay):
         print("Can't analyze this replay...please check if it's for osu!standard and it's not too old")
     return
 
-fr = open_replay()
-sr = open_replay()
-
 
 def get_events_per_second(replay):
     events = []
@@ -56,36 +53,61 @@ def get_events_per_second(replay):
             events.append([event.x, new_y, event.keys_pressed])
     return events
 
-analyze(fr)
-analyze(sr)
 
-fr_positions = get_events_per_second(fr)
-sr_positions = get_events_per_second(sr)
+def get_events_per_second_api(replay, mods):
+    events = []
+    time = 0
+    replay_events = replay.split(",")
 
-length = len(fr_positions) if len(fr_positions) <= len(sr_positions) else len(sr_positions)
+    for event in replay_events:
+        values = event.split("|")
+        try:
+            time += float(values[0])
+        except ValueError:
+            continue
+        if 1000*len(events) <= time:
+            new_y = float(values[2]) if "HR" not in mods else 384-float(values[2])
+            events.append([float(values[1]), new_y, float(values[3])])
+    return events
 
-closeness = []
-same_keys_pressed = 0
-not_same_keys_pressed = 0
 
-for x in range(0, length-1):
-    first_p = fr_positions[x]
-    second_p = sr_positions[x]
-    x = first_p[0] - second_p[0]
-    y = first_p[1] - second_p[1]
-    closeness.append(math.sqrt(x**2 + y**2))
-    if first_p[2] == second_p[2]:
-        same_keys_pressed += 1
-    else:
-        not_same_keys_pressed += 1
+def compare_data(positions1, positions2):
+    length = len(positions1) if len(positions1) <= len(positions2) else len(positions2)
+    closeness = []
+    same_keys_pressed = 0
+    not_same_keys_pressed = 0
 
-same_key_percentage = (100*same_keys_pressed) / (same_keys_pressed+not_same_keys_pressed)
-different_key_percentage = 100 - same_key_percentage
+    for x in range(0, length - 1):
+        first_p = positions1[x]
+        second_p = positions2[x]
+        x = first_p[0] - second_p[0]
+        y = first_p[1] - second_p[1]
+        closeness.append(math.sqrt(x ** 2 + y ** 2))
+        if first_p[2] == second_p[2]:
+            same_keys_pressed += 1
+        else:
+            not_same_keys_pressed += 1
 
-print("\nCases where the same keys were pressed: %s%%\n" % same_key_percentage +
-      "Cases where the pressed keys were different: %s%%\n" % different_key_percentage)
-print("Lowest values:")
-for values in sorted(closeness)[1:11]:
-    print(values)
-print("\nAverage of similarity:")
-print(sum(closeness)/len(closeness))
+    same_key_percentage = (100 * same_keys_pressed) / (same_keys_pressed + not_same_keys_pressed)
+    different_key_percentage = 100 - same_key_percentage
+
+    return closeness, same_key_percentage, different_key_percentage
+
+
+if __name__ == "__main__":
+    fr = open_replay()
+    sr = open_replay()
+    analyze(fr)
+    analyze(sr)
+    fr_positions = get_events_per_second(fr)
+    sr_positions = get_events_per_second(sr)
+
+    comparison = compare_data(fr_positions, sr_positions)
+
+    print("\nCases where the same keys were pressed: %s%%\n" % comparison[1] +
+          "Cases where the pressed keys were different: %s%%\n" % comparison[2])
+    print("Lowest values:")
+    for comp_values in sorted(comparison[0])[1:11]:
+        print(comp_values)
+    print("\nAverage of similarity:")
+    print(sum(comparison[0]) / len(comparison[0]))
