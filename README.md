@@ -9,6 +9,7 @@ paste an osu!api key in `apikey.txt`
 
 # usage
 - you can run `python dontsteal.py` to compare two replays you have
+- you can run `python checktop50.py` to compare a replay with its beatmap top 50 in osu!
 
 # thanks to
 [goeo_](https://github.com/goeo-) for helping me out a lot with Python coding and the logic behind the program
