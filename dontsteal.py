@@ -1,4 +1,5 @@
 import math
+import osuapi
 import tkinter as tk
 from tkinter import filedialog
 from datetime import datetime, timedelta
@@ -18,15 +19,14 @@ def open_replay():
 
 def analyze(replay):
     if replay.game_mode is GameMode.Standard and replay.game_version >= 20140226:
+        print(str(osuapi.get_beatmap_info(replay.beatmap_hash))[2:-2])
         # convert windows ticks in datetime
         replay_date = datetime(1, 1, 1) + timedelta(microseconds=replay.timestamp / 10)
-        print("Played by " + replay.player_name + " on " + replay_date.strftime("%Y-%m-%d %H:%M:%S"))
-        if replay.mod_combination is Mod.NoMod:
-            pass
-        else:
-            print("Mods:")
-            for mods_used in replay.mod_combination:
-                print(str(mods_used).split("Mod.")[1])
+        print("REPLAY INFO: " + "played by " + replay.player_name + " on "
+              + replay_date.strftime("%Y-%m-%d %H:%M:%S") + "\n")
+        print("Mods:")
+        for mods_used in replay.mod_combination:
+            print(str(mods_used).split("Mod.")[1])
         score = ["\nTotal Score: %s" % replay.score, "300s: %s" % replay.number_300s,
                  "100s: %s" % replay.number_100s, "50s: %s" % replay.number_50s, "Gekis: %s" % replay.gekis,
                  "Katus: %s" % replay.katus, "Misses: %s" % replay.misses, "Max Combo: %s" % replay.max_combo]
@@ -35,10 +35,9 @@ def analyze(replay):
         if replay.is_perfect_combo:
             print("Perfect Combo!\n")
         else:
-            pass
-        print("Analyzing replay data...\n")
+            print("")
     else:
-        print("Can't analyze this replay...please check if it's for osu!standard and it's not too old")
+        raise ValueError("Can't analyze this replay, it might be too old or not for osu!standard.")
     return
 
 
@@ -90,7 +89,6 @@ def compare_data(positions1, positions2):
 
     same_key_percentage = (100 * same_keys_pressed) / (same_keys_pressed + not_same_keys_pressed)
     different_key_percentage = 100 - same_key_percentage
-
     return closeness, same_key_percentage, different_key_percentage
 
 
@@ -102,12 +100,16 @@ if __name__ == "__main__":
     fr_positions = get_events_per_second(fr)
     sr_positions = get_events_per_second(sr)
 
+    print("Analyzing replay data...\n")
+
     comparison = compare_data(fr_positions, sr_positions)
 
-    print("\nCases where the same keys were pressed: %s%%\n" % comparison[1] +
+    print("Cases where the same keys were pressed: %s%%\n" % comparison[1] +
           "Cases where the pressed keys were different: %s%%\n" % comparison[2])
     print("Lowest values:")
+
     for comp_values in sorted(comparison[0])[1:11]:
         print(comp_values)
+
     print("\nAverage of similarity:")
     print(sum(comparison[0]) / len(comparison[0]))
