@@ -99,17 +99,12 @@ if __name__ == "__main__":
     analyze(sr)
     fr_positions = get_events_per_second(fr)
     sr_positions = get_events_per_second(sr)
-
-    print("Analyzing replay data...\n")
-
     comparison = compare_data(fr_positions, sr_positions)
 
-    print("Cases where the same keys were pressed: %s%%\n" % comparison[1] +
-          "Cases where the pressed keys were different: %s%%\n" % comparison[2])
+    print("Cases where the same keys were pressed: {0:.2f}%\n".format(comparison[1]) +
+          "Cases where the pressed keys were different: {0:.2f}%\n".format(comparison[2]))
     print("Lowest values:")
-
-    for comp_values in sorted(comparison[0])[1:11]:
+    for comp_values in sorted(comparison[0])[2:12]:
         print(comp_values)
-
     print("\nAverage of similarity:")
-    print(sum(comparison[0]) / len(comparison[0]))
+    print("{0:.4f}".format(sum(comparison[0]) / len(comparison[0])))
