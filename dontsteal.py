@@ -1,13 +1,14 @@
+"""dontsteal - stop stealing replays and git gud scrub!"""
 import math
-import osuapi
 import tkinter as tk
 from tkinter import filedialog
-from datetime import datetime, timedelta
+import osuapi
 from osrparse.replay import parse_replay_file
 from osrparse.enums import GameMode, Mod
 
 
 def open_replay():
+    """Calls an explorer window to browse the replay and returns its path"""
     options = {"defaultextension": ".osr",
                "filetypes": [("osu! replay file", ".osr")],
                "title": "Open the replay files to analyze"}
@@ -18,20 +19,23 @@ def open_replay():
 
 
 def analyze(replay):
+    """Prints some common info about the replay"""
     if replay.game_mode is GameMode.Standard and replay.game_version >= 20140226:
         print(str(osuapi.get_beatmap_info(replay.beatmap_hash))[2:-2])
-        # convert windows ticks in datetime
-        replay_date = datetime(1, 1, 1) + timedelta(microseconds=replay.timestamp / 10)
-        print("REPLAY INFO: " + "played by " + replay.player_name + " on "
-              + replay_date.strftime("%Y-%m-%d %H:%M:%S") + "\n")
-        print("Mods:")
+        print("REPLAY INFO: " + "played by " + replay.player_name)
+        print("Mods used:")
         for mods_used in replay.mod_combination:
             print(str(mods_used).split("Mod.")[1])
-        score = ["\nTotal Score: %s" % replay.score, "300s: %s" % replay.number_300s,
-                 "100s: %s" % replay.number_100s, "50s: %s" % replay.number_50s, "Gekis: %s" % replay.gekis,
-                 "Katus: %s" % replay.katus, "Misses: %s" % replay.misses, "Max Combo: %s" % replay.max_combo]
-        for sc in score:
-            print(sc)
+        score = ["\nTotal Score: {}".format(replay.score),
+                 "300s: {}".format(replay.number_300s),
+                 "100s: {}".format(replay.number_100s),
+                 "50s: {}".format(replay.number_50s),
+                 "Gekis: {}".format(replay.gekis),
+                 "Katus: {}".format(replay.katus),
+                 "Misses: {}".format(replay.misses),
+                 "Max Combo: {}".format(replay.max_combo)]
+        for score_combo in score:
+            print(score_combo)
         if replay.is_perfect_combo:
             print("Perfect Combo!\n")
         else:
@@ -42,6 +46,7 @@ def analyze(replay):
 
 
 def get_events_per_second(replay):
+    """Gets coordinates and key pressed per second"""
     events = []
     time = 0
 
@@ -54,6 +59,7 @@ def get_events_per_second(replay):
 
 
 def get_events_per_second_api(replay, mods):
+    """Gets coordinates and key pressed per second for API"""
     events = []
     time = 0
     replay_events = replay.split(",")
@@ -71,17 +77,18 @@ def get_events_per_second_api(replay, mods):
 
 
 def compare_data(positions1, positions2):
+    """Compares coordinates and key pressed between the two replays"""
     length = len(positions1) if len(positions1) <= len(positions2) else len(positions2)
     closeness = []
     same_keys_pressed = 0
     not_same_keys_pressed = 0
 
-    for x in range(0, length - 1):
-        first_p = positions1[x]
-        second_p = positions2[x]
-        x = first_p[0] - second_p[0]
-        y = first_p[1] - second_p[1]
-        closeness.append(math.sqrt(x ** 2 + y ** 2))
+    for x_value in range(0, length - 1):
+        first_p = positions1[x_value]
+        second_p = positions2[x_value]
+        x_value = first_p[0] - second_p[0]
+        y_value = first_p[1] - second_p[1]
+        closeness.append(math.sqrt(x_value ** 2 + y_value ** 2))
         if first_p[2] == second_p[2]:
             same_keys_pressed += 1
         else:
@@ -93,13 +100,13 @@ def compare_data(positions1, positions2):
 
 
 if __name__ == "__main__":
-    fr = open_replay()
-    sr = open_replay()
-    analyze(fr)
-    analyze(sr)
-    fr_positions = get_events_per_second(fr)
-    sr_positions = get_events_per_second(sr)
-    comparison = compare_data(fr_positions, sr_positions)
+    first_replay = open_replay()
+    second_replay = open_replay()
+    analyze(first_replay)
+    analyze(second_replay)
+    first_replay_positions = get_events_per_second(first_replay)
+    second_replay_positions = get_events_per_second(second_replay)
+    comparison = compare_data(first_replay_positions, second_replay_positions)
 
     print("Cases where the same keys were pressed: {0:.2f}%\n".format(comparison[1]) +
           "Cases where the pressed keys were different: {0:.2f}%\n".format(comparison[2]))
