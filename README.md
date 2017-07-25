@@ -10,6 +10,7 @@ Python 3 script to compare two osu! replays for similarities.
 
 # Contributors
 * [goeo_](https://github.com/goeo-) - Helped out with the initial logic.
+* [Swan](https://github.com/Swan) - Fixed it to use osu! accounts to download replays rather than the slow API
  
  # LICENSE
  MIT License
